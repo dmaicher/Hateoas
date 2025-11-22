@@ -21,6 +21,7 @@ jobs:
           - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         dependencies:
           - "highest"
           - "lowest"
@@ -28,18 +29,15 @@ jobs:
           - "yes"
           - "no"
         symfony-require:
-          - "^3.0"
-          - "^4.0"
-          - "^5.0"
-          - "^6.0"
-          - "^7.0"
+          - "^5.4"
+          - "^6.4"
+          - "^7.3"
         exclude:
           - php-version: "8.1"
-            symfony-require: "^7.0"
-          - php-version: "8.4"
-            symfony-require: "^3.0"
-          - php-version: "8.4"
-            symfony-require: "^4.0"
+            symfony-require: "^7.3"
+        include:
+          - php-version: "8.5"
+            symfony-require: "^8.0"
 
     steps:
       - name: Checkout code
@@ -59,6 +57,11 @@ jobs:
           SYMFONY_REQUIRE: "${{ matrix.symfony-require }}"
         run: |
           composer remove --no-update --dev doctrine/annotations
+
+      # until Symfony 8 is released
+      - name: Configure Composer minimum stability
+        if: matrix.symfony-require == '^8.0'
+        run: composer config minimum-stability dev
 
       - name: "Install dependencies with Composer"
         uses: "ramsey/composer-install@v2"
